@@ -22,7 +22,7 @@ var geocoders = {
         }
       }
     },
-  yandex: {
+    yandex: {
       query: function(query, key) {
         return 'http://geocode-maps.yandex.ru/1.x/?format=json&results=1&geocode=' + query + '&lang=en-US';
       },
@@ -32,6 +32,23 @@ var geocoders = {
             longitude: r.response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos,
             latitude: r.response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos,
             accuracy: r.response.GeoObjectCollection.featureMember[0].GeoObject.metaDataProperty.GeocoderMetaData.precision
+          }
+        } catch(e) {
+          return { longitude: '', latitude: '', accuracy: '' };
+        }
+      }
+    },
+    opencage: {
+      query: function(query, key) {
+        return 'https://api.opencagedata.com/geocode/v1/json?key=' +
+            key + '&no_annotations=1&q=' + query;
+      },
+      parse: function(r) {
+        try {
+          return {
+            longitude: r[0].geometry.lng,
+            latitude: r[0].geometry.lat,
+            accuracy: r[0].confidence
           }
         } catch(e) {
           return { longitude: '', latitude: '', accuracy: '' };
@@ -247,6 +264,7 @@ function gcDialog() {
     .setName('apiBox')
     .setId('apiBox')
     .addItem('mapquest')
+    .addItem('opencage')
     .addItem('yahoo')
     .addItem('yandex')
     .addItem('cicero'));
